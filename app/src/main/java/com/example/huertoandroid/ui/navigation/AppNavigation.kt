@@ -4,16 +4,19 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+
+// importar las pantallas
+import com.example.huertoandroid.ui.screens.login.LoginScreen
 import com.example.huertoandroid.ui.screens.home.HomeScreen
 import com.example.huertoandroid.ui.screens.productos.ProductsScreen
-import com.huertohogar.ui.screens.login.LoginScreen
 import com.example.huertoandroid.ui.screens.nosotros.NosotrosScreen
 import com.example.huertoandroid.ui.screens.configurar.ConfigurarScreen
+import com.example.huertoandroid.ui.register.RegisterScreen
 
 @Composable
 fun AppNavigation(
-    isDarkTheme: Boolean,               // <-- 1. ACEPTA EL ESTADO DEL TEMA
-    onThemeChange: (Boolean) -> Unit   // <-- 2. ACEPTA LA FUNCIÓN PARA CAMBIARLO
+    isDarkTheme: Boolean,
+    onThemeChange: (Boolean) -> Unit
 ) {
     val navController = rememberNavController()
 
@@ -21,9 +24,25 @@ fun AppNavigation(
         navController = navController,
         startDestination = AppScreens.Login.route
     ) {
-        composable(route = AppScreens.Login.route) {
+        // LOGIN
+        composable(AppScreens.Login.route) {
             LoginScreen(
                 onLoginSuccess = {
+                    navController.navigate(AppScreens.Home.route) {
+                        popUpTo(AppScreens.Login.route) { inclusive = true }
+                    }
+                },
+                onRegisterClick = {                    // ← NUEVO: ir a Registro
+                    navController.navigate(AppScreens.Register.route)
+                }
+            )
+        }
+
+        // REGISTER (NUEVO DESTINO)
+        composable(AppScreens.Register.route) {
+            RegisterScreen(
+                onRegistered = {
+                    // Al registrar, vamos a Home y limpiamos Login/Register del back stack
                     navController.navigate(AppScreens.Home.route) {
                         popUpTo(AppScreens.Login.route) { inclusive = true }
                     }
@@ -31,47 +50,44 @@ fun AppNavigation(
             )
         }
 
-        composable(route = AppScreens.Home.route) {
+        // HOME
+        composable(AppScreens.Home.route) {
             HomeScreen(
                 onLogout = {
                     navController.navigate(AppScreens.Login.route) {
                         popUpTo(AppScreens.Home.route) { inclusive = true }
                     }
                 },
-                onNavigate = { route ->
-                    navController.navigate(route)
-                }
+                onNavigate = { route -> navController.navigate(route) }
             )
         }
 
-        composable(route = AppScreens.Products.route) {
+        // PRODUCTOS
+        composable(AppScreens.Products.route) {
             ProductsScreen(
                 onLogout = {
                     navController.navigate(AppScreens.Login.route) {
                         popUpTo(AppScreens.Home.route) { inclusive = true }
                     }
                 },
-                onNavigate = { route ->
-                    navController.navigate(route)
-                }
+                onNavigate = { route -> navController.navigate(route) }
             )
         }
 
-        composable(route = AppScreens.Nosotros.route) {
+        // NOSOTROS
+        composable(AppScreens.Nosotros.route) {
             NosotrosScreen(
                 onLogout = {
                     navController.navigate(AppScreens.Login.route) {
                         popUpTo(AppScreens.Home.route) { inclusive = true }
                     }
                 },
-                onNavigate = { route ->
-                    navController.navigate(route)
-                }
+                onNavigate = { route -> navController.navigate(route) }
             )
         }
 
-        // 3. LA LLAMADA A ConfigurarScreen AHORA ES VÁLIDA
-        composable(route = AppScreens.Configurar.route) {
+        // CONFIGURAR
+        composable(AppScreens.Configurar.route) {
             ConfigurarScreen(
                 onLogout = {
                     navController.navigate(AppScreens.Login.route) {
@@ -79,18 +95,19 @@ fun AppNavigation(
                     }
                 },
                 onNavigate = { route -> navController.navigate(route) },
-                isDarkTheme = isDarkTheme,      // Pasa el estado actual
-                onThemeChange = onThemeChange   // Pasa la función para cambiarlo
+                isDarkTheme = isDarkTheme,
+                onThemeChange = onThemeChange
             )
         }
     }
 }
 
-// La sealed class ya está perfecta, no necesita cambios.
+// RUTAS
 sealed class AppScreens(val route: String) {
-    object Login: AppScreens("login")
-    object Home: AppScreens("home")
-    object Products: AppScreens("products")
+    object Login : AppScreens("login")
+    object Register : AppScreens("register")   // ← NUEVA
+    object Home : AppScreens("home")
+    object Products : AppScreens("products")
     object Nosotros : AppScreens("nosotros")
     object Configurar : AppScreens("configurar")
 }
