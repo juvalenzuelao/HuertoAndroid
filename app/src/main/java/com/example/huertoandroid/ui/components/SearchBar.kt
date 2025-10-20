@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun SearchBar(modifier: Modifier = Modifier) {
-    // Estado para guardar el texto que el usuario escribe en la barra
     var text by remember { mutableStateOf("") }
 
     OutlinedTextField(

@@ -20,7 +20,6 @@ fun ProductsScreen(
     onLogout: () -> Unit,
     onNavigate: (String) -> Unit
 ) {
-    // 1. Añadimos el estado para el BottomBar. El índice 1 corresponde a "Productos".
     var selectedItem by remember { mutableStateOf(1) }
 
     Scaffold(
@@ -31,7 +30,6 @@ fun ProductsScreen(
             )
         },
         bottomBar = {
-            // 2. Llamamos a AppBottomBar con sus parámetros
             AppBottomBar(
                 selectedItem = selectedItem,
                 onItemSelected = { newIndex ->

@@ -29,18 +29,18 @@ fun HomeScreen(
     onLogout: () -> Unit,
     onNavigate: (String) -> Unit
 ) {
-    // El estado para el ítem seleccionado del BottomBar sigue viviendo aquí
+    // El estado para el ítem seleccionado del BottomBar
     var selectedItem by remember { mutableStateOf(0) }
 
     Scaffold(
-        // 2. Llama a AppTopBar, pasándole el título y la acción de logout
+        // 2. Llama a TopBar, pasándole el título y la acción de logout
         topBar = {
             AppTopBar(
                 title = "Bienvenido a HuertoHogar",
                 onLogout = onLogout
             )
         },
-        // 3. Llama a AppBottomBar, pasándole el estado y la función para actualizarlo
+        // 3. Llama a BottomBar, pasándole el estado y la función para actualizarlo
         bottomBar = {
             AppBottomBar(
                 selectedItem = selectedItem,

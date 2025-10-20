@@ -25,7 +25,6 @@ fun ConfigurarScreen(
     isDarkTheme: Boolean,
     onThemeChange: (Boolean) -> Unit
 ) {
-    // El índice 3 corresponde a "Configurar"
     var selectedItem by remember { mutableStateOf(3) }
 
     Scaffold(

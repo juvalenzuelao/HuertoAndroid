@@ -70,7 +70,7 @@ fun NosotrosScreen(
             Text(
                 text = "HuertoHogar nació hace 6 años con la misión de conectar el campo chileno directamente con tu mesa. Somos un puente entre productores locales y tú, eliminando intermediarios para garantizar frescura y calidad inigualables.",
                 style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Justify // Justificar el texto lo hace ver más ordenado
+                textAlign = TextAlign.Justify
             )
 
             Spacer(modifier = Modifier.height(12.dp))
