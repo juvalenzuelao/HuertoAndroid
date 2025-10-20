@@ -1,119 +1,93 @@
 package com.example.huertoandroid.ui.screens.login
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.huertoandroid.ui.theme.HuertoGreen
-import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
     onLoginSuccess: () -> Unit,
-    onRegisterClick: () -> Unit
+    onNavigateToRegister: () -> Unit
 ) {
-    // VM con Room (factory)
-    val vm: LoginViewModel = viewModel(
-        factory = LoginVmFactory(LocalContext.current.applicationContext)
-    )
-    val host = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
-
-    // escuchar eventos del VM
-    LaunchedEffect(Unit) {
-        vm.events.collect { ev ->
-            when (ev) {
-                is LoginEvent.Success -> onLoginSuccess()
-                is LoginEvent.Message -> scope.launch { host.showSnackbar(ev.msg) }
-            }
-        }
-    }
-
+    // Variables que guardan lo que escribe el usuario
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
-    val canLogin = email.isNotBlank() && password.isNotBlank()
 
-    Scaffold(snackbarHost = { SnackbarHost(host) }) { inner ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp)
-                .padding(inner),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+    val context = LocalContext.current
+
+    // Pantalla
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        // Título
+        Text(
+            text = "Iniciar Sesión",
+            style = MaterialTheme.typography.headlineLarge
+        )
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Campo Email
+        OutlinedTextField(
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Correo Electrónico") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Campo Contraseña
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Contraseña") },
+            modifier = Modifier.fillMaxWidth(),
+            visualTransformation = PasswordVisualTransformation()
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Botón de Entrar
+        Button(
+            onClick = {
+                // Validación simple con if
+                if (email.isBlank()) {
+                    Toast.makeText(context, "Escribe tu email", Toast.LENGTH_SHORT).show()
+                } else if (!email.contains("@")) {
+                    Toast.makeText(context, "El email debe contener @", Toast.LENGTH_SHORT).show()
+                } else if (!email.contains(".")) {
+                    Toast.makeText(context, "El email debe contener un dominio válido (ej: .com)", Toast.LENGTH_SHORT).show()
+                } else if (password.isBlank()) {
+                    Toast.makeText(context, "Escribe tu contraseña", Toast.LENGTH_SHORT).show()
+                } else if (password.length < 6) {
+                    Toast.makeText(context, "La contraseña debe tener al menos 6 caracteres", Toast.LENGTH_SHORT).show()
+                } else {
+                    // Todo está bien, iniciar sesión
+                    Toast.makeText(context, "¡Inicio de sesión exitoso!", Toast.LENGTH_SHORT).show()
+                    onLoginSuccess()
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
         ) {
-            // “logo”
-            Text("HuertoHogar", fontSize = 36.sp, fontWeight = FontWeight.Bold, color = HuertoGreen)
-            Text(
-                text = "Del campo a tu hogar",
-                fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(bottom = 48.dp)
-            )
+            Text("Entrar")
+        }
 
-            // email
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Correo electrónico") },
-                leadingIcon = { Icon(Icons.Default.Email, null) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-                singleLine = true
-            )
+        Spacer(modifier = Modifier.height(16.dp))
 
-            // password
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Contraseña") },
-                leadingIcon = { Icon(Icons.Default.Lock, null) },
-                trailingIcon = {
-                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff, null)
-                    }
-                },
-                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
-                singleLine = true
-            )
-
-            TextButton(
-                onClick = { /* TODO: recuperar */ },
-                modifier = Modifier.align(Alignment.End).padding(bottom = 24.dp)
-            ) { Text("¿Olvidaste tu contraseña?") }
-
-            // login real (usa Room vía VM)
-            Button(
-                onClick = { vm.login(email, password) },
-                enabled = canLogin,
-                modifier = Modifier.fillMaxWidth().height(50.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = HuertoGreen)
-            ) { Text("Iniciar Sesión", fontSize = 16.sp, fontWeight = FontWeight.Bold) }
-
-            Spacer(Modifier.height(16.dp))
-
-            OutlinedButton(
-                onClick = onRegisterClick,
-                modifier = Modifier.fillMaxWidth().height(50.dp)
-            ) { Text("Crear cuenta nueva") }
+        // Botón para ir al Registro
+        TextButton(onClick = onNavigateToRegister) {
+            Text("¿No tienes cuenta? Regístrate")
         }
     }
 }

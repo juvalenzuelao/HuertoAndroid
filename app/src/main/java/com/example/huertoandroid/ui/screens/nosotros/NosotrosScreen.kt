@@ -42,6 +42,7 @@ fun NosotrosScreen(
                             1 -> onNavigate(AppScreens.Products.route)
                             2 -> onNavigate(AppScreens.Nosotros.route)
                             3 -> onNavigate(AppScreens.Configurar.route)
+                            4 -> onNavigate(AppScreens.Admin.route)
                         }
                     }
                 }

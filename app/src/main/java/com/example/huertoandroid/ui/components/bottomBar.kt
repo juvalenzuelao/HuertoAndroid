@@ -1,6 +1,7 @@
 package com.example.huertoandroid.ui.components
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AdminPanelSettings
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -27,7 +28,8 @@ fun AppBottomBar(
         BottomNavItem("Inicio", Icons.Default.Home),
         BottomNavItem("Productos", Icons.Default.ShoppingCart),
         BottomNavItem("Quiénes Somos", Icons.Default.Info),
-        BottomNavItem("Configurar", Icons.Default.Settings)
+        BottomNavItem("Configurar", Icons.Default.Settings),
+        BottomNavItem("Admin", Icons.Default.AdminPanelSettings)
     )
 
     NavigationBar(modifier = modifier) {

@@ -11,7 +11,8 @@ import com.example.huertoandroid.ui.screens.home.HomeScreen
 import com.example.huertoandroid.ui.screens.productos.ProductsScreen
 import com.example.huertoandroid.ui.screens.nosotros.NosotrosScreen
 import com.example.huertoandroid.ui.screens.configurar.ConfigurarScreen
-import com.example.huertoandroid.ui.register.RegisterScreen
+import com.example.huertoandroid.ui.screens.register.RegisterScreen
+import com.example.huertoandroid.ui.screens.admin.AdminScreen
 
 @Composable
 fun AppNavigation(
@@ -32,20 +33,20 @@ fun AppNavigation(
                         popUpTo(AppScreens.Login.route) { inclusive = true }
                     }
                 },
-                onRegisterClick = {                    // ← NUEVO: ir a Registro
+                onNavigateToRegister = {
                     navController.navigate(AppScreens.Register.route)
                 }
             )
         }
 
-        // REGISTER (NUEVO DESTINO)
+        // REGISTER
         composable(AppScreens.Register.route) {
             RegisterScreen(
-                onRegistered = {
-                    // Al registrar, vamos a Home y limpiamos Login/Register del back stack
-                    navController.navigate(AppScreens.Home.route) {
-                        popUpTo(AppScreens.Login.route) { inclusive = true }
-                    }
+                onRegisterSuccess = {
+                    navController.popBackStack()
+                },
+                onNavigateToLogin = {
+                    navController.popBackStack()
                 }
             )
         }
@@ -99,15 +100,27 @@ fun AppNavigation(
                 onThemeChange = onThemeChange
             )
         }
+        composable(AppScreens.Admin.route) {
+            AdminScreen (
+                onLogout = {
+                    navController.navigate(AppScreens.Login.route) {
+                        popUpTo(AppScreens.Home.route) { inclusive = true }
+                    }
+                },
+                onNavigate = { route -> navController.navigate(route) }
+            )
+        }
     }
 }
 
 // RUTAS
 sealed class AppScreens(val route: String) {
     object Login : AppScreens("login")
-    object Register : AppScreens("register")   // ← NUEVA
+    object Register : AppScreens("register")
     object Home : AppScreens("home")
     object Products : AppScreens("products")
     object Nosotros : AppScreens("nosotros")
     object Configurar : AppScreens("configurar")
+    object Admin : AppScreens("admin")
+
 }
