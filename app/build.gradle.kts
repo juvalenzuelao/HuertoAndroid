@@ -67,6 +67,16 @@ dependencies {
     implementation("androidx.room:room-ktx:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
 
+    // Retrofit para peticiones HTTP
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // OkHttp (logging interceptor - opcional pero útil)
+    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
+
+    // Coroutines (si aún no las tienes)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
     // tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
