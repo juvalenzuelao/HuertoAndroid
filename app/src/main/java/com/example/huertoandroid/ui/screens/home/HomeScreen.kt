@@ -22,6 +22,11 @@ import com.example.huertoandroid.R
 import com.example.huertoandroid.ui.components.AppBottomBar
 import com.example.huertoandroid.ui.components.AppTopBar
 import com.example.huertoandroid.ui.navigation.AppScreens
+import androidx.compose.ui.platform.LocalContext
+import com.example.huertoandroid.model.WeatherResponse
+import com.example.huertoandroid.network.RetrofitClient
+import kotlinx.coroutines.launch
+import android.widget.Toast
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,6 +36,27 @@ fun HomeScreen(
 ) {
     // El estado para el ítem seleccionado del BottomBar
     var selectedItem by remember { mutableStateOf(0) }
+    // Estado para el clima
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var weatherData by remember { mutableStateOf<WeatherResponse?>(null) }
+    var isLoadingWeather by remember { mutableStateOf(true) }
+
+    // Cargar el clima cuando se muestra la pantalla
+    LaunchedEffect(Unit) {
+        scope.launch {
+            try {
+                val response = RetrofitClient.apiService.getWeather()
+                if (response.isSuccessful) {
+                    weatherData = response.body()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(context, "Error al cargar clima", Toast.LENGTH_SHORT).show()
+            } finally {
+                isLoadingWeather = false
+            }
+        }
+    }
 
     Scaffold(
         // 2. Llama a TopBar, pasándole el título y la acción de logout
@@ -65,6 +91,46 @@ fun HomeScreen(
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
         ) {
+            // Card del Clima
+            if (!isLoadingWeather && weatherData != null) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text(
+                                text = "🌤️ ${weatherData!!.name}",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
+                            Text(
+                                text = weatherData!!.weather[0].description.capitalize(),
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
+                        }
+                        Text(
+                            text = "${weatherData!!.main.temp.toInt()}°C",
+                            fontSize = 32.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                    }
+                }
+            }
+
             // Banner Hero
             Card(
                 modifier = Modifier
