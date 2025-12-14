@@ -77,6 +77,8 @@ dependencies {
     // Coroutines (si aún no las tienes)
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
+    implementation("io.coil-kt:coil-compose:2.5.0")
+
     // tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
